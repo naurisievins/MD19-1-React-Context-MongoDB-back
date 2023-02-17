@@ -15,20 +15,11 @@ main().catch((err) => console.log(err));
 const TODOSchema = new mongoose.Schema({
   title: { type: String, required: true },
   content: { type: String, required: true },
-  date: { type: Date, required: true },
-  isDone: { type: Boolean, required: true },
+  date: { type: Date, default: new Date() },
+  isDone: { type: Boolean, default: false },
 });
 
 const Todo = mongoose.model("Todo", TODOSchema);
-
-const task = new Todo({
-  title: "Task1",
-  content: "Do homework",
-  date: new Date(),
-  isDone: false,
-});
-
-task.save();
 
 const res = Todo.find();
 
@@ -37,17 +28,51 @@ const app = express();
 app.use(bodyparser.json());
 app.use(cors({ origin: "*" }));
 
+// Get all tasks
+
 app.get("/tasks", (req: Request, res: Response) => {
   Todo.find().then((data) => res.send(data));
 });
 
-app.get("/tasks/:id", (req: Request, res: Response) => {
+// Add new task
+
+app.post("/tasks", (req: Request, res: Response) => {
+  const title = req.body.title;
+  const content = req.body.content;
+  const task = new Todo({
+    title,
+    content,
+  });
+  task.save();
+  res.status(200).send("Task added");
+});
+
+// Mark task as completed
+
+app.put("/tasks/:id", (req, res) => {
   const id = req.params.id;
-  console.log(id);
-  // const id = "63ef557bc9de64720dc262ce";
-  Todo.findById(id).then((data) => {
-    data.title = "new title";
-    res.send(data);
+  const isDone = req.body.isDone;
+
+  Todo.findByIdAndUpdate(id, { isDone: !isDone }, (err) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send("Error updating task");
+    }
+    res.send(`Task with ID ${id} marked as Done!`);
+  });
+});
+
+// Delete task
+
+app.delete("/tasks/:id", (req, res) => {
+  const id = req.params.id;
+
+  Todo.findByIdAndDelete(id, (err) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send("Error deleting task!");
+    }
+    res.send(`Task with ID ${id} deleted successfully`);
   });
 });
 

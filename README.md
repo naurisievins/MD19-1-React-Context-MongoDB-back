@@ -1,2 +1,13 @@
-# Express Typescript Boilerplate
-To start developing run `npm install` and then `npm run start:nodemon`
+# TODO app backend
+
+Run docker container:
+
+`docker pull mongo`
+
+`docker run --name mongodb -d -p 27017:27017 mongo`
+
+Run server:
+
+`npm install`
+
+`npm run start:nodemon`

@@ -11,3 +11,5 @@ Run server:
 `npm install`
 
 `npm run start:nodemon`
+
+Run frontend: https://github.com/naurisievins/MD19-2-React-Context-MongoDB-front

@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import bodyparser from "body-parser";
 import cors from "cors";
 import { Todo } from "./db";
+import { validateInput } from "./validateInput";
 
 const app = express();
 
@@ -18,14 +19,20 @@ app.get("/tasks", (req: Request, res: Response) => {
 // Add new task
 
 app.post("/tasks", (req: Request, res: Response) => {
-  const title = req.body.title;
-  const content = req.body.content;
-  const task = new Todo({
-    title,
-    content,
-  });
-  task.save();
-  res.status(200).send("Task added");
+  let title = req.body.title;
+  title = validateInput(title);
+
+  let content = req.body.content;
+  content = validateInput(content);
+
+  if (title && content) {
+    const task = new Todo({
+      title,
+      content,
+    });
+    task.save();
+    res.status(200).send("Task added");
+  }
 });
 
 // Mark task as completed
